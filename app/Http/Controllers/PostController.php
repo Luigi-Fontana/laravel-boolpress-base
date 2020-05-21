@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\Validator;
 
+use Carbon\Carbon;
+
 class PostController extends Controller
 {
     /**
@@ -45,7 +47,8 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        $data['slug'] = Str::slug($data['title'] , '-');
+        $now = Carbon::now()->format('Y-m-d-H-i-s');
+        $data['slug'] = Str::slug($data['title'] , '-') . $now;
 
         $validator = Validator::make($data, [
             'title' => 'required|string|max:150',
@@ -54,12 +57,17 @@ class PostController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect('posts/create')
+            return redirect()->route('posts.create')
                 ->withErrors($validator)
                 ->withInput();
         }
 
         $post = new Post;
+
+        if(empty($data['img'])) {
+            unset($data['img']);
+        }
+
         $post->fill($data);
         $saved = $post->save();
 
@@ -90,12 +98,16 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  Post $post
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        if(empty($post)){
+            abort('404');
+        }
+
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -105,9 +117,42 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
-        //
+        $post = Post::where('slug', $slug)->first();
+
+        if(empty($post)){
+            abort('404');
+        }
+
+        $data = $request->all();
+        $now = Carbon::now()->format('Y-m-d-H-i-s');
+        $data['slug'] = Str::slug($data['title'] , '-') . $now;
+
+        $validator = Validator::make($data, [
+            'title' => 'required|string|max:150',
+            'author' => 'required|string|max:100',
+            'body' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('posts.edit')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        if(empty($data['img'])) {
+            unset($data['img']);
+        }
+
+        $post->fill($data);
+        $saved = $post->update();
+
+        if(!$saved) {
+            dd('errore nel salvataggio del record');
+        }
+
+        return redirect()->route('posts.show', $post->slug);
     }
 
     /**
@@ -118,6 +163,14 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::find($id);
+
+        if (empty($post)) {
+            abort('404');
+        }
+
+        $post->delete();
+
+        return redirect()->route('posts.index');
     }
 }

@@ -14,12 +14,32 @@
                         <thead>
                             <th>Titolo</th>
                             <th>Autore</th>
+                            <th>Riassunto</th>
+                            <th>Pubblicato</th>
+                            <th>Azioni</th>
                         </thead>
                         <tbody>
                         @foreach ($posts as $post)
                             <tr>
-                                <td><a href="{{route('posts.show', $post->slug)}}">{{$post->title}}</a></td>
-                                <td>Scritto da {{$post->author}}</td>
+                                <td>{{$post->title}}</td>
+                                <td>{{$post->author}}</td>
+                                <td>{{$post->summary}}</td>
+                                <td>
+                                    @if ($post->published == 1)
+                                        SI
+                                    @elseif ($post->published == 0)
+                                        NO
+                                    @endif
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-warning m-1"><a href="{{route('posts.show', $post->slug)}}">Visualizza</a></button>
+                                    <button type="button" class="btn btn-sm btn-warning m-1"><a href="{{route('posts.edit', $post)}}">Modifica</a></button>
+                                    <form action="{{route('posts.destroy', $post->id)}}" method="POST">
+                                        @method('DELETE')
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-danger m-1">Elimina</button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -28,12 +48,12 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <a href="{{route('posts.create')}}">Nuovo inserimento</a>
+                    <a class="badge badge-warning m-3" href="{{route('posts.create')}}">Inserisci</a>
                 </div>
             </div>
             <div class="row">
                 <div class="col-12">
-                    <a href="{{route('posts.published')}}">Visualizza solo quelli pubblicati</a>
+                    <a class="badge badge-info m-4" href="{{route('posts.published')}}">Visualizza solo quelli pubblicati</a>
                 </div>
             </div>
         </div>
