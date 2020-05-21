@@ -60,7 +60,7 @@
         </form>
         <div class="row">
             <div class="col-12">
-                <a href="{{route('posts.index')}}">Torna all'indice</a>
+                <button type="button" class="btn btn-sm btn-light m-1"><a href="{{route('posts.index')}}">Annulla Inserimento</a></button>
             </div>
         </div>
     </body>

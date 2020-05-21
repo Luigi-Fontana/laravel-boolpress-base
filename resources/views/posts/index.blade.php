@@ -10,6 +10,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-light m-1"><a href="{{route('posts.published')}}">Visualizza solo quelli pubblicati</a></button>
+                    <button type="button" class="btn btn-sm btn-light m-1"><a href="{{route('posts.create')}}">Inserisci</a></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <table class="table">
                         <thead>
                             <th>Titolo</th>
@@ -32,8 +38,8 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-warning m-1"><a href="{{route('posts.show', $post->slug)}}">Visualizza</a></button>
-                                    <button type="button" class="btn btn-sm btn-warning m-1"><a href="{{route('posts.edit', $post)}}">Modifica</a></button>
+                                    <button type="button" class="btn btn-sm btn-light m-1"><a href="{{route('posts.show', $post->slug)}}">Visualizza</a></button>
+                                    <button type="button" class="btn btn-sm btn-light m-1"><a href="{{route('posts.edit', $post)}}">Modifica</a></button>
                                     <form action="{{route('posts.destroy', $post->id)}}" method="POST">
                                         @method('DELETE')
                                         @csrf
@@ -44,16 +50,6 @@
                         @endforeach
                         </tbody>
                     </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <a class="badge badge-warning m-3" href="{{route('posts.create')}}">Inserisci</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <a class="badge badge-info m-4" href="{{route('posts.published')}}">Visualizza solo quelli pubblicati</a>
                 </div>
             </div>
         </div>
