@@ -71,11 +71,13 @@ class PostController extends Controller
         $post->fill($data);
         $saved = $post->save();
 
-        if(!$saved) {
-            dd('errore nel salvataggio del record');
+        if (!$saved) {
+            return redirect()->route('posts.create')
+                ->with('failure', 'Post non inserito');
         }
 
-        return redirect()->route('posts.show', $post->slug);
+        return redirect()->route('posts.index')
+            ->with('success', 'Post ' . $post->id . ' inserito');
     }
 
     /**
@@ -146,13 +148,15 @@ class PostController extends Controller
         }
 
         $post->fill($data);
-        $saved = $post->update();
+        $updated = $post->update();
 
-        if(!$saved) {
-            dd('errore nel salvataggio del record');
+        if (!$updated) {
+            return redirect()->route('posts.edit', $id)
+                ->with('failure', 'Post non aggiornato');
         }
 
-        return redirect()->route('posts.show', $post->slug);
+        return redirect()->route('posts.show', $slug)
+            ->with('success', 'Post aggiornato');
     }
 
     /**
@@ -163,14 +167,15 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
 
-        if (empty($post)) {
-            abort('404');
+        $deleted = $post->delete();
+
+        if (!$deleted) {
+            return redirect()->back()->with('failure', 'Post non Eliminato');
         }
 
-        $post->delete();
-
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.index')
+            ->with('success', 'Post ' . $id . ' Eliminato');
     }
 }
